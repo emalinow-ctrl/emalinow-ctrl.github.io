@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Veilaudit — audit video for failed censorship</title>
+<meta name="description" content="Veilaudit is an open-source, fully local pipeline that audits video for improperly censored faces — blur, pixelation, and black-box failures caught automatically.">
+<style>
+  :root{--bg:#0b0b0e;--fg:#e8e8ea;--dim:#9a9aa3;--accent:#e5484d;--line:#232329}
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  a{color:var(--fg)}
+  .wrap{max-width:860px;margin:0 auto;padding:0 24px}
+  header{padding:28px 0;border-bottom:1px solid var(--line)}
+  header .brand{font-weight:700;letter-spacing:.02em}
+  header .brand span{color:var(--accent)}
+  .hero{padding:72px 0 48px}
+  .hero h1{font-size:clamp(30px,5vw,44px);line-height:1.15;letter-spacing:-.02em}
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero p{margin-top:18px;color:var(--dim);max-width:640px}
+  .cta{margin-top:28px;display:flex;gap:14px;flex-wrap:wrap}
+  .btn{display:inline-block;padding:11px 20px;border-radius:8px;border:1px solid var(--line);text-decoration:none;font-weight:600}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  section{padding:40px 0;border-top:1px solid var(--line)}
+  h2{font-size:22px;margin-bottom:16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+  .card{border:1px solid var(--line);border-radius:10px;padding:18px}
+  .card b{display:block;margin-bottom:6px}
+  .card p{color:var(--dim);font-size:14.5px}
+  ol.steps{counter-reset:s;list-style:none;display:grid;gap:12px}
+  ol.steps li{counter-increment:s;border:1px solid var(--line);border-radius:10px;padding:14px 18px;color:var(--dim)}
+  ol.steps li::before{content:counter(s);color:var(--accent);font-weight:700;margin-right:10px}
+  .note{background:#141416;border-left:3px solid var(--accent);padding:14px 18px;border-radius:0 8px 8px 0;color:var(--dim);font-size:14.5px;margin-top:18px}
+  footer{padding:32px 0 60px;color:var(--dim);font-size:14px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  code{background:#141416;padding:2px 6px;border-radius:6px;font-size:13.5px}
+</style>
+</head>
+<body>
+<header><div class="wrap brand">veil<span>audit</span></div></header>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>Catch the faces that<br><em>blur was supposed to hide.</em></h1>
+    <p>Veilaudit is an open-source, fully local pipeline that audits folders of video
+       for improperly censored faces. Redaction failures are invisible until they're a
+       scandal — this finds them before publication, frame by frame, with a review
+       queue and an auditable report.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/emalinow-ctrl/Veilaudit">View on GitHub</a>
+      <a class="btn" href="https://github.com/emalinow-ctrl/Veilaudit#readme">Documentation</a>
+    </div>
+  </div>
+
+  <section>
+    <h2>Why it matters</h2>
+    <div class="grid">
+      <div class="card"><b>Redaction fails silently</b><p>A blur a human can still read, a black box over a PDF's text layer, a pixelated face that embedding search still identifies. Failures ship because nothing checks them.</p></div>
+      <div class="card"><b>Audits, not just detection</b><p>The output isn't a guess — it's a per-frame, per-track report you can act on: every face judged sharp after it should have been hidden.</p></div>
+      <div class="card"><b>Runs on your machine</b><p>No cloud APIs, no uploads, no content filters. Footage never leaves the machine it's on.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li><b>Decode</b> — samples every Nth frame of each video via OpenCV/FFmpeg.</li>
+      <li><b>Detect</b> — SCRFD face detection (ONNX Runtime), run at your chosen size.</li>
+      <li><b>Judge</b> — Laplacian variance, FFT high-frequency ratio, edge density, and a solid-mask (black bar) check, on the full-resolution crop.</li>
+      <li><b>Track</b> — IoU tracking gives every face a stable ID and a vote history, so one ambiguous frame can't flag a person — and one frame can't hide them.</li>
+      <li><b>Review</b> — flagged frames land in a review queue with a dashboard; a learning loop tunes thresholds from your accept/deny labels.</li>
+    </ol>
+    <div class="note">A learned classifier (MobileNetV3-Small, trained on synthesized
+    censorship — blur, mosaic, black bars — exported to ONNX) is included as a
+    tiebreaker for the hand-tuned metrics.</div>
+  </section>
+
+  <section>
+    <h2>Status</h2>
+    <p style="color:var(--dim)">Pre-alpha, under active development. Roadmap: harden the video
+    benchmark suite first, then extend the same audit contract to documents
+    (redacted-PDF audits) and audio (de-anonymization checks). Apache-2.0.</p>
+  </section>
+
+  <footer>
+    <div>Veilaudit — Apache-2.0</div>
+    <div><a href="https://github.com/emalinow-ctrl/Veilaudit">github.com/emalinow-ctrl/Veilaudit</a></div>
+  </footer>
+</div>
+</body>
+</html>
